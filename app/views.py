@@ -55,11 +55,11 @@ async def get_association_data(
 
             association_data.append(
                 {
-                "business_id": bQuery.id,
-                "business_name": bQuery.name,
-                "symptom_code": sQuery.code,
-                "symptom_name": sQuery.name,
-                "symptom_diagnostic": association.diagnostic,
+                "Business ID": bQuery.id,
+                "Business Name": bQuery.name,
+                "Symptom Code": sQuery.code,
+                "Symptom Name": sQuery.name,
+                "Symptom Diagnostic": association.diagnostic,
                 }
             )
         return association_data
