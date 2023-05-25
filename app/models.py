@@ -5,24 +5,11 @@ import datetime
 
 Base = declarative_base()
 
-
-# business_symptom_association = Table(
-#     'business_symptom',
-#     Base.metadata,
-#     Column('business_id', Integer, ForeignKey('business.id')),
-#     Column('symptom_code', String, ForeignKey('symptom.code')),
-#     Column('diagnostic', Boolean, nullable=False),
-#     Column('created_at',DateTime(timezone=True), nullable=False, default=datetime.datetime.utcnow),
-#     Column('updated_at',DateTime(timezone=True), nullable=False, default=datetime.datetime.utcnow),
-#     Column('created_by',String(100), nullable=True),
-#     Column('updated_by',String(100), nullable=True)
-# )
-
 class Symptom(Base):
     __tablename__ = "symptom"
     id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
-    business_id  = Column(Integer, ForeignKey('Business.id'))
-    symptom_code = Column(String, ForeignKey('SymptomCode.code'))
+    business_id  = Column(Integer, ForeignKey('business.id'),nullable=False)
+    symptom_code = Column(String(9), ForeignKey('symptom_code.code'),nullable=False)
     symptom_diagnostic = Column(Boolean, nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.datetime.utcnow)
