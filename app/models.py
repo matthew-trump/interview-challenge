@@ -15,6 +15,8 @@ class Symptom(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.datetime.utcnow)
     created_by = Column(String(100), nullable=True)
     updated_by = Column(String(100), nullable=True)
+    business   = relationship('Business',foreign_keys="Symptom.business_id")
+    symptom    = relationship('SymptomCode',foreign_keys="Symptom.symptom_code")
 
 
 class Business(Base):

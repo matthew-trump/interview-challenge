@@ -18,3 +18,4 @@ DB_USER = get_env("DB_USER", "postgres")
 DB_PASSWORD = get_env("DB_PWD", "password")
 
 DB_URL: str = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+USER = DB_USER
