@@ -5,41 +5,31 @@ from models import business_symptom_association
 from models import Symptom
 from models import Business
 from models import Symptom
-from settings import get_env
+from settings import get_env, DB_URL
 
 router = APIRouter()
-
 
 @router.get('/status')
 async def get_status():
     try:
         return {"Health OK"}
-
     except Exception as e:
         return {'Error: ' + str(e)}
 
 
-DB_HOST = get_env("DB_HOST", "localhost")
-DB_NAME = get_env("DB_NAME", "postgres")
-DB_USER = get_env("DB_USER", "postgres")
-DB_PASSWORD = get_env("DB_PWD", "password")
-
-DB_URL: str = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
-
+print(DB_URL)
 
 # Create an engine and session
 engine = create_engine(DB_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-@router.get("/data/{symptom_code}")
+@router.get('/symptoms/')
 async def get_association_data(
-    symptom_code: str,
     business_id: int = Query(None, title="Business ID"),
     diagnostic: str = Query(None, title="Symptom Code")
 ):
-   
-        query = session.query(business_symptom_association).filter(business_symptom_association.c.symptom_code==symptom_code)
+        query = session.query(business_symptom_association)
         if business_id:
             query = query.filter(business_symptom_association.c.business_id==business_id)
         if diagnostic:
@@ -92,7 +82,6 @@ async def upload_csv(file: UploadFile=File(...)):
                     'updated_by' : 'matt'
                 })
 
-        print(association_data)
         with engine.begin() as conn:
              stmt = insert(business_symptom_association).values(association_data)
              conn.execute(stmt)
