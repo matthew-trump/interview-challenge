@@ -5,6 +5,7 @@ from models import Symptom
 from models import Business
 from models import SymptomCode
 from settings import get_env, DB_URL, USER
+from typing import List, Dict
 
 router = APIRouter()
 
@@ -23,22 +24,30 @@ session = Session()
 @router.get('/symptoms/')
 async def get_association_data(
     business_id: int = Query(None, title="Business ID"),
-    diagnostic: str = Query(None, title="Symptom Code")
+    diagnostic: str = Query(None, title="Symptom Diagnostic"),
+    symptom_code: str = Query(None, title="Symptom Code"),
+    offset: int = Query(0,title="Offset"), 
+    limit: int = Query(10,title="Limit")
 ):
         query = session.query(Symptom)
-        if business_id and is_valid_business_id(business_id):
-            query = query.filter(Symptom.business_id==business_id)
+        if business_id:
+            if is_valid_business_id(business_id):
+                query = query.filter(Symptom.business_id==business_id)
+            else:
+                raise HTTPException(status_code=400, detail=f"Illegal value for business id: {business_id}")
+            
+        if symptom_code:
+            if is_valid_symptom_code(symptom_code):
+                query = query.filter(Symptom.symptom_code==symptom_code)
+            else:
+                raise HTTPException(status_code=400, detail=f"Illegal value for symptom code: {symptom_code}")
         if diagnostic:
             query = query.filter(Symptom.symptom_diagnostic==parse_bool_from_string(diagnostic))
-
-        result = query.all()
-       
+        
+    
+        result = query.offset(offset).limit(limit).all()
         symptoms = []
-
         for symptom in result:
-            #bQuery = session.query(Business).filter(Business.id==association.business_id).first()
-            #sQuery = session.query(Symptom).filter(Symptom.code==association.symptom_code).first()
-
             symptoms.append(
                 {
                 "Business ID":          symptom.business_id,
@@ -100,7 +109,7 @@ def update_businesses_to_be_added(existing,record):
        updated[record[0]] =   { 'id' : int(record[0]),  'name' : record[1], 'created_by': USER, 'updated_by' : USER }
      return updated
     
-@router.post('/business_symptoms/')
+@router.post('/symptoms/')
 async def upload_business_symptoms_csv(file: UploadFile=File(...)):
     if file.content_type != "text/csv":
         raise HTTPException(status_code=400, detail="Invalid file format. Only CSV files are allowed.")

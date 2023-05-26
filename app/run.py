@@ -9,4 +9,4 @@ app.include_router(views.router)
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8013)
+    uvicorn.run(app, host='127.0.0.1', port=8014)
